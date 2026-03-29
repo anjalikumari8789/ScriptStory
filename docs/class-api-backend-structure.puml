@@ -1,0 +1,89 @@
+@startuml
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "Routes" {
+  class auth.route
+  class user.route
+  class post.route
+  class comment.route
+}
+
+package "Controllers" {
+  class auth.controller {
+    +signup(req,res,next)
+    +signin(req,res,next)
+  }
+
+  class user.controller {
+    +test(req,res)
+    +updateUser(req,res,next)
+    +deleteUser(req,res,next)
+    +signout(req,res,next)
+    +getUsers(req,res,next)
+    +getUser(req,res,next)
+  }
+
+  class post.controller {
+    +create(req,res,next)
+    +getposts(req,res,next)
+    +deletepost(req,res,next)
+    +updatepost(req,res,next)
+  }
+
+  class comment.controller {
+    +createComment(req,res,next)
+    +getPostComments(req,res,next)
+    +likeComment(req,res,next)
+    +editComment(req,res,next)
+    +deleteComment(req,res,next)
+    +getcomments(req,res,next)
+  }
+}
+
+package "Models" {
+  class User
+  class Post
+  class Comment
+}
+
+package "Middleware/Utils" {
+  class verifyUser {
+    +verifyToken(req,res,next)
+  }
+
+  class error {
+    +errorHandler(statusCode,message)
+  }
+}
+
+class "ExpressApp (api/index.js)" as ApiApp {
+  +connectMiddleware(req,res,next)
+}
+
+ApiApp *-- auth.route
+ApiApp *-- user.route
+ApiApp *-- post.route
+ApiApp *-- comment.route
+
+user.route ..> verifyUser : protected routes
+post.route ..> verifyUser : protected routes
+comment.route ..> verifyUser : protected routes
+
+auth.route ..> auth.controller
+user.route ..> user.controller
+post.route ..> post.controller
+comment.route ..> comment.controller
+
+auth.controller ..> User
+user.controller ..> User
+post.controller ..> Post
+comment.controller ..> Comment
+
+auth.controller ..> error
+user.controller ..> error
+post.controller ..> error
+comment.controller ..> error
+verifyUser ..> error
+
+@enduml

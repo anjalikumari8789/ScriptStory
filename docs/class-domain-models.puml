@@ -1,0 +1,50 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class User {
+  +_id: ObjectId
+  +username: String
+  +email: String
+  +password: String
+  +profilePicture: String
+  +isAdmin: Boolean
+  +createdAt: Date
+  +updatedAt: Date
+}
+
+class Post {
+  +_id: ObjectId
+  +userId: String
+  +title: String
+  +content: String
+  +image: String
+  +category: String
+  +slug: String
+  +createdAt: Date
+  +updatedAt: Date
+}
+
+class Comment {
+  +_id: ObjectId
+  +content: String
+  +postId: String
+  +userId: String
+  +likes: Array
+  +numberOfLikes: Number
+  +createdAt: Date
+  +updatedAt: Date
+}
+
+enum PostCategory {
+  uncategorized
+  javascript
+  reactjs
+  nextjs
+}
+
+User "1" <-- "0..*" Post : author(userId)
+User "1" <-- "0..*" Comment : writes(userId)
+Post "1" <-- "0..*" Comment : has(postId)
+Post --> PostCategory : category
+
+@enduml

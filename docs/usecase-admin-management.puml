@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+
+actor Admin
+
+rectangle "ScriptStory - Admin Management" {
+  usecase "Open Admin Dashboard" as UC_OpenDashboard
+  usecase "View Platform Metrics" as UC_Metrics
+  usecase "View Users List" as UC_ViewUsers
+  usecase "Delete User" as UC_DeleteUser
+
+  usecase "View Posts List" as UC_ViewPosts
+  usecase "Update Post" as UC_UpdatePost
+  usecase "Delete Post" as UC_DeletePost
+
+  usecase "View Comments List" as UC_ViewComments
+  usecase "Moderate Comment" as UC_ModerateComment
+
+  usecase "Authorize Admin Request" as UC_AdminAuth
+}
+
+Admin --> UC_OpenDashboard
+Admin --> UC_ViewUsers
+Admin --> UC_DeleteUser
+Admin --> UC_ViewPosts
+Admin --> UC_UpdatePost
+Admin --> UC_DeletePost
+Admin --> UC_ViewComments
+Admin --> UC_ModerateComment
+
+UC_OpenDashboard .> UC_Metrics : <<include>>
+UC_ViewUsers .> UC_AdminAuth : <<include>>
+UC_DeleteUser .> UC_AdminAuth : <<include>>
+UC_UpdatePost .> UC_AdminAuth : <<include>>
+UC_DeletePost .> UC_AdminAuth : <<include>>
+UC_ViewComments .> UC_AdminAuth : <<include>>
+UC_ModerateComment .> UC_AdminAuth : <<include>>
+UC_ModerateComment .> UC_ViewComments : <<extend>>
+
+@enduml

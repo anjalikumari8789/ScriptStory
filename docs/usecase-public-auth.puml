@@ -1,0 +1,37 @@
+@startuml
+left to right direction
+
+actor Visitor
+actor User
+actor Admin
+Admin --|> User
+
+rectangle "ScriptStory - Public & Authentication" {
+  usecase "Browse Home Page" as UC_Home
+  usecase "Search and Filter Posts" as UC_Search
+  usecase "View Post Details" as UC_PostDetails
+
+  usecase "Sign Up" as UC_SignUp
+  usecase "Sign In" as UC_SignIn
+  usecase "Validate Credentials" as UC_Validate
+  usecase "Sign Out" as UC_SignOut
+
+  usecase "Open Dashboard" as UC_Dashboard
+  usecase "Verify Session Token" as UC_VerifyToken
+}
+
+Visitor --> UC_Home
+Visitor --> UC_Search
+Visitor --> UC_PostDetails
+Visitor --> UC_SignUp
+Visitor --> UC_SignIn
+
+User --> UC_SignOut
+User --> UC_Dashboard
+
+Admin --> UC_Dashboard
+
+UC_SignIn .> UC_Validate : <<include>>
+UC_Dashboard .> UC_VerifyToken : <<include>>
+
+@enduml

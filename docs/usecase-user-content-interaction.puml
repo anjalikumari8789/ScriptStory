@@ -1,0 +1,43 @@
+@startuml
+left to right direction
+
+actor User
+actor Admin
+Admin --|> User
+
+rectangle "ScriptStory - User Content Interaction" {
+  usecase "View Post" as UC_ViewPost
+  usecase "Create Comment" as UC_CreateComment
+  usecase "Like/Unlike Comment" as UC_LikeComment
+  usecase "Edit Own Comment" as UC_EditComment
+  usecase "Delete Own Comment" as UC_DeleteComment
+
+  usecase "Manage Profile" as UC_Profile
+  usecase "Upload Profile Picture" as UC_UploadProfile
+
+  usecase "Create Post" as UC_CreatePost
+  usecase "Update Post" as UC_UpdatePost
+  usecase "Delete Post" as UC_DeletePost
+  usecase "Upload Post Image" as UC_UploadPostImage
+}
+
+User --> UC_ViewPost
+User --> UC_CreateComment
+User --> UC_LikeComment
+User --> UC_EditComment
+User --> UC_DeleteComment
+User --> UC_Profile
+
+Admin --> UC_CreatePost
+Admin --> UC_UpdatePost
+Admin --> UC_DeletePost
+
+UC_CreateComment .> UC_ViewPost : <<include>>
+UC_LikeComment .> UC_ViewPost : <<include>>
+UC_EditComment .> UC_ViewPost : <<extend>>
+UC_DeleteComment .> UC_ViewPost : <<extend>>
+UC_Profile .> UC_UploadProfile : <<extend>>
+UC_CreatePost .> UC_UploadPostImage : <<extend>>
+UC_UpdatePost .> UC_UploadPostImage : <<extend>>
+
+@enduml
