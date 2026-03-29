@@ -60,3 +60,19 @@ VITE_BACKEND_URL=http://localhost:<backend-port>
 Open:
 - `http://localhost:<backend-port>/api/test`
 - `http://localhost:5173`
+
+## 6) Seed sample users and posts
+
+From the project root:
+
+```powershell
+npm run seed
+```
+
+This will recreate sample data with:
+- 5 users (1 admin + 4 regular users)
+- 20 posts (4 posts per user)
+
+Seeded admin login:
+- Email: `admin@scriptstory.dev`
+- Password: `Pass@123`
