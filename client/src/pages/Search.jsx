@@ -10,9 +10,9 @@ export default function Search() {
     category: 'uncategorized',
   });
 
-  console.log(sidebarData);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [showMore, setShowMore] = useState(false);
 
   const location = useLocation();
@@ -26,32 +26,38 @@ export default function Search() {
     const categoryFromUrl = urlParams.get('category');
     if (searchTermFromUrl || sortFromUrl || categoryFromUrl) {
       setSidebarData({
-        ...sidebarData,
-        searchTerm: searchTermFromUrl,
-        sort: sortFromUrl,
-        category: categoryFromUrl,
+        searchTerm: searchTermFromUrl || '',
+        sort: sortFromUrl || 'desc',
+        category: categoryFromUrl || 'uncategorized',
       });
     }
 
     const fetchPosts = async () => {
-      setLoading(true);
-      const searchQuery = urlParams.toString();
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/post/getposts?${searchQuery}`
-      );
-      if (!res.ok) {
-        setLoading(false);
-        return;
-      }
-      if (res.ok) {
+      try {
+        setLoading(true);
+        setError(null);
+        const searchQuery = urlParams.toString();
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/post/getposts?${searchQuery}`
+        );
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch posts');
+        }
+
         const data = await res.json();
         setPosts(data.posts);
-        setLoading(false);
         if (data.posts.length === 9) {
           setShowMore(true);
         } else {
           setShowMore(false);
         }
+      } catch (err) {
+        setPosts([]);
+        setShowMore(false);
+        setError(err.message || 'Something went wrong while fetching posts.');
+      } finally {
+        setLoading(false);
       }
     };
     fetchPosts();
@@ -82,18 +88,19 @@ export default function Search() {
   };
 
   const handleShowMore = async () => {
-    const numberOfPosts = posts.length;
-    const startIndex = numberOfPosts;
-    const urlParams = new URLSearchParams(location.search);
-    urlParams.set('startIndex', startIndex);
-    const searchQuery = urlParams.toString();
-    const res = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/post/getposts?${searchQuery}`
-    );
-    if (!res.ok) {
-      return;
-    }
-    if (res.ok) {
+    try {
+      const numberOfPosts = posts.length;
+      const startIndex = numberOfPosts;
+      const urlParams = new URLSearchParams(location.search);
+      urlParams.set('startIndex', startIndex);
+      const searchQuery = urlParams.toString();
+      const res = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/post/getposts?${searchQuery}`
+      );
+      if (!res.ok) {
+        throw new Error('Failed to load more posts');
+      }
+
       const data = await res.json();
       setPosts([...posts, ...data.posts]);
       if (data.posts.length === 9) {
@@ -101,6 +108,8 @@ export default function Search() {
       } else {
         setShowMore(false);
       }
+    } catch (err) {
+      setError(err.message || 'Could not load more posts.');
     }
   };
 
@@ -150,6 +159,7 @@ export default function Search() {
           Posts results:
         </h1>
         <div className='p-7 flex flex-wrap gap-4'>
+          {!loading && error && <p className='text-xl text-red-500'>{error}</p>}
           {!loading && posts.length === 0 && (
             <p className='text-xl text-gray-500'>No posts found.</p>
           )}
